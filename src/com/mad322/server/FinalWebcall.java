@@ -634,5 +634,130 @@ PreparedStatement prepareStatement = null;
 	  	  
 
   }
-	
+	// INserting into Customer
+  
+  
+  PreparedStatement preparedStatement = null;
+    @POST
+	@Path("/newCusto")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response createCustomer(Customer customer)
+	{
+		MysqlConnection connection = new MysqlConnection();		
+		connect = connection.getConnection();
+		
+	try
+	{	
+		String query = "INSERT INTO `midterm`.`customer`(`CUST_ID`,`ADDRESS`,`CITY`,`CUST_TYPE_CD`,`FED_ID`,`POSTAL_CODE`,`STATE`)"
+				+ "VALUES(?,?,?,?,?,?,?)";
+		
+		preparedStatement = connect.prepareStatement(query);		
+		preparedStatement.setInt(1, customer.getCUST_ID());
+		preparedStatement.setString(2, customer.getADDRESS());
+		preparedStatement.setString(3,customer.getCITY());
+		preparedStatement.setString(4,customer.getCUST_TYPE_CD());
+		preparedStatement.setString(5,customer.getFED_ID());
+		preparedStatement.setString(6, customer.getPOSTAL_CODE());
+		preparedStatement.setString(7, customer.getSTATE());
+					
+		int rowCount = preparedStatement.executeUpdate();
+		
+		if(rowCount>0)
+		{
+			System.out.println("Record inserted Successfully! : "+rowCount);
+			
+			main.accumulate("Status", 201);
+			main.accumulate("Message", "Record Successfully added!");
+		}else
+		{
+			main.accumulate("Status", 500);
+			main.accumulate("Message", "Something went wrong!");
+		}
+		
+		
+	}
+	     catch (SQLException e) {
+
+		main.accumulate("Status", 500);
+		main.accumulate("Message", e.getMessage());
+	}
+	     finally {
+		  try
+		  {
+			 connect.close();
+		    	preparedStatement.close();
+		  }
+		       catch (SQLException e) {
+		    	System.out.println("Finally SQL Exception : "+e.getMessage());
+		  }
+	}		
+	return Response.status(201).entity(main.toString()).build();
+					
+	}
+    
+    
+    // Inserting into Employee
+    
+    PreparedStatement prepaStatement = null;
+    @POST
+	@Path("/newEmployee")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response createEmployee(Employee employee)
+	{
+		MysqlConnection connection = new MysqlConnection();		
+		connect = connection.getConnection();
+		
+	try
+	{	
+		String query = "INSERT INTO `midterm`.`employee`(`EMP_ID`,`END_DATE`,`FIRST_NAME`,`LAST_NAME`,`START_DATE`,`TITLE`,`ASSIGNED_BRANCH_ID`,`DEPT_ID`,`SUPERIOR_EMP_ID`)"
+				+ "VALUES(?,?,?,?,?,?,?,?,?)";
+		
+		preparedStatement = connect.prepareStatement(query);		
+		preparedStatement.setInt(1, employee.geteMP_ID());
+		preparedStatement.setString(2, employee.geteND_DATE());
+		preparedStatement.setString(3,employee.getfIRST_NAME());
+		preparedStatement.setString(4,employee.getlAST_NAME());
+		preparedStatement.setString(5,employee.getsTART_DATE());
+		preparedStatement.setString(6, employee.gettITLE());
+		preparedStatement.setInt(7, employee.getaSSIGNED_BRANCH_ID());
+		preparedStatement.setInt(8, employee.getdEPT_ID());
+		preparedStatement.setInt(9, employee.getsUPERIOR_EMP_ID());
+					
+		int rowCount = preparedStatement.executeUpdate();
+		
+		if(rowCount>0)
+		{
+			System.out.println("Record inserted Successfully! : "+rowCount);
+			
+			main.accumulate("Status", 201);
+			main.accumulate("Message", "Record Successfully added!");
+		}else
+		{
+			main.accumulate("Status", 500);
+			main.accumulate("Message", "Something went wrong!");
+		}
+		
+		
+	}
+	     catch (SQLException e) {
+
+		main.accumulate("Status", 500);
+		main.accumulate("Message", e.getMessage());
+	}
+	     finally {
+		  try
+		  {
+			 connect.close();
+		    	preparedStatement.close();
+		  }
+		       catch (SQLException e) {
+		    	System.out.println("Finally SQL Exception : "+e.getMessage());
+		  }
+	}		
+	return Response.status(201).entity(main.toString()).build();
+					
+	}
+
 }
