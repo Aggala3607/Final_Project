@@ -759,5 +759,238 @@ PreparedStatement prepareStatement = null;
 	return Response.status(201).entity(main.toString()).build();
 					
 	}
+ @DELETE
+@Path("/deleteEmp/{id}")
+@Produces(MediaType.APPLICATION_JSON)
+public Response selectEmployee(@PathParam("id") int id)
+{
+	MysqlConnection connection= new MysqlConnection();
+	conn= connection.getConnection();
+	Status status= Status.OK;
+	try
+	{
+		String query="DELETE FROM `employee` WHERE `EMP_ID` = "+id;
+		stmt= conn.createStatement();		
+		stmt.executeUpdate(query);
+		
+		int rowCount = stmt.executeUpdate(query);
+		if (rowCount > 0) 
+		{
+		status=Status.OK;
+		main.accumulate("status", status);
+		main.accumulate("Message","Data successfully updated !");
+		System.out.println("Data successfully deleted");
+		
+		}
+		
+		
+	}catch(SQLException e)
+	{
+		e.printStackTrace();
+		status=Status.NOT_MODIFIED;
+		main.accumulate("status",status);
+		main.accumulate("Message","Something Went Wrong");
+	}
+	
+	
+	return Response.status(status).entity(main.toString()).build();
+}
+    
+
+//Deleting record from the Branch table
+
+@DELETE
+@Path("/deleteBranch/{id}")
+@Produces(MediaType.APPLICATION_JSON)
+public Response selectBranch(@PathParam("id") int id)
+{
+	MysqlConnection connection= new MysqlConnection();
+	conn= connection.getConnection();
+	Status status= Status.OK;
+	try
+	{
+		String query="DELETE FROM `branch` WHERE `BRANCH_ID` = "+id;
+		stmt= conn.createStatement();		
+		stmt.executeUpdate(query);
+		
+		int rowCount = stmt.executeUpdate(query);
+		if (rowCount > 0) 
+		{
+		status=Status.OK;
+		main.accumulate("status", status);
+		main.accumulate("Message","Data successfully updated !");
+		System.out.println("Data successfully deleted");
+		
+		}
+		
+		
+	}catch(SQLException e)
+	{
+		e.printStackTrace();
+		status=Status.NOT_MODIFIED;
+		main.accumulate("status",status);
+		main.accumulate("Message","Something Went Wrong");
+	}
+	
+	
+	return Response.status(status).entity(main.toString()).build();
+}
+
+@DELETE
+@Path("/deleteAccount/{id}")
+@Produces(MediaType.APPLICATION_JSON)
+public Response selectEmployee(@PathParam("id") int id)
+{
+	MysqlConnection connection= new MysqlConnection();
+	conn= connection.getConnection();
+	Status status= Status.OK;
+	try
+	{
+		String query="DELETE FROM `account` WHERE `accountid` = "+id;
+		stmt= conn.createStatement();		
+		stmt.executeUpdate(query);
+		
+		int rowCount = stmt.executeUpdate(query);
+		if (rowCount > 0) 
+		{
+		status=Status.OK;
+		main.accumulate("status", status);
+		main.accumulate("Message","Data successfully updated !");
+		System.out.println("Data successfully deleted");
+		
+		}
+		
+		
+	}catch(SQLException e)
+	{
+		e.printStackTrace();
+		status=Status.NOT_MODIFIED;
+		main.accumulate("status",status);
+		main.accumulate("Message","Something Went Wrong");
+	}
+	
+	
+	return Response.status(status).entity(main.toString()).build();
+}
+    @GET
+	@Path("/getAccount/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getAccount(@PathParam("id") String id) {
+    	MysqlConnection connection = new MysqlConnection();		
+		connect = connection.getConnection();
+		try {
+			stmt = connect.createStatement();
+
+			res = stmt.executeQuery("Select * from account where pending_balance<"+id);
+
+			while (res.next()) {
+				child = new JSONObject();
+
+				child.accumulate("accountid", res.getString("account_id"));
+				child.accumulate("availablebalance", res.getString("avail_balance"));
+				child.accumulate("closedate", res.getDate("close_date"));
+				child.accumulate("lastactivity", res.getDate("last_activity_date"));
+				child.accumulate("opendate",res.getDate("open_date"));
+				child.accumulate("pendingbalance",res.getString("pending_balance"));
+				child.accumulate("status",res.getString("status"));
+				child.accumulate("custid",res.getString("cust_id"));
+				child.accumulate("openbranchid",res.getString("open_branch_id"));
+				child.accumulate("openempid",res.getString("open_emp_id"));
+				child.accumulate("productcd",res.getString("product_cd"));
+				jsArray.put(child);
+			}
+
+			main.put("Account", jsArray);
+		} catch (SQLException e) {
+			System.out.println("SQL Exception : " + e.getMessage());
+		} finally {
+			try {
+				connect.close();
+				stmt.close();
+				res.close();
+			} catch (SQLException e) {
+				System.out.println("Finally Block SQL Exception : " + e.getMessage());
+			}
+		}
+
+		return Response.status(200).entity(main.toString()).build();
+
+	}
+@GET
+	@Path("/getBranch/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getAccount(@PathParam("id") String id) {
+    	MysqlConnection connection = new MysqlConnection();		
+		connect = connection.getConnection();
+		try {
+			stmt = connect.createStatement();
+
+			res = stmt.executeQuery("Select * from account where pending_balance<"+id);
+
+			while (res.next()) {
+				child = new JSONObject();
+
+				child.accumulate("branch_ID", res.getInt("branch_ID"));
+				child.accumulate("address", res.getString("address"));
+				child.accumulate("city", res.getString("city"));
+				child.accumulate("name", res.getString("name"));
+				child.accumulate("state",res.getString("state"));
+				child.accumulate("zip_CODE",res.getInt("zip_CODE"));
+				jsArray.put(child);
+			}
+
+			main.put("Account", jsArray);
+		} catch (SQLException e) {
+			System.out.println("SQL Exception : " + e.getMessage());
+		} finally {
+			try {
+				connect.close();
+				stmt.close();
+				res.close();
+			} catch (SQLException e) {
+				System.out.println("Finally Block SQL Exception : " + e.getMessage());
+			}
+		}
+
+		return Response.status(200).entity(main.toString()).build();
+
+	}
+@GET
+	@Path("/getIndividual/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getAccount(@PathParam("id") String id) {
+    	MysqlConnection connection = new MysqlConnection();		
+		connect = connection.getConnection();
+		try {
+			stmt = connect.createStatement();
+
+			res = stmt.executeQuery("Select * from account where pending_balance<"+id);
+
+			while (res.next()) {
+				child = new JSONObject();
+
+				child.accumulate("birth_date", res.getString("birth_date"));
+				child.accumulate("first_name", res.getString("first_name"));
+				child.accumulate("last_name", res.getString("last_name"));
+				child.accumulate("cust_id", res.getInt("cust_id"));
+				jsArray.put(child);
+			}
+
+			main.put("Account", jsArray);
+		} catch (SQLException e) {
+			System.out.println("SQL Exception : " + e.getMessage());
+		} finally {
+			try {
+				connect.close();
+				stmt.close();
+				res.close();
+			} catch (SQLException e) {
+				System.out.println("Finally Block SQL Exception : " + e.getMessage());
+			}
+		}
+
+		return Response.status(200).entity(main.toString()).build();
+
+	}
 
 }
