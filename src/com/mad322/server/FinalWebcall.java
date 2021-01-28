@@ -992,5 +992,154 @@ public Response selectEmployee(@PathParam("id") int id)
 		return Response.status(200).entity(main.toString()).build();
 
 	}
+           // Displaying from Employees whose assigned branch is given in the parameter
+  @GET
+  @Path("/sasank/{t}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response sasank(@PathParam("t")int t)
+  {
+	  
+	  
+	  MysqlConnection connection = new MysqlConnection();
+	 connect = connection.getConnection();
+	   
+	   try 
+	   {
+		stmt = connect.createStatement();
+		res = stmt.executeQuery("select * from employee where ASSIGNED_BRANCH_ID = "+t+";");
+		
+		while(res.next())
+		{
+		  child = new JSONObject();
+		  
+		  
+		  child.accumulate("Employee Name", res.getString("FIRST_NAME"));	
+		  child.accumulate("Department ID", res.getString("DEPT_ID"));
+	
+		  	 		  
+		  jsArray.put(child);
+		}
+		
+		main.put("employee", jsArray);
+		
+	   }catch(SQLException e)
+		{
+			System.out.println("SQL Exception : +e.getMessage");
+		}
+		finally
+		{
+			try
+			{
+				connect.close();
+				stmt.close();
+				res.close();
+			}
+			catch (SQLException e)
+			{
+				System.out.println("Finally Block SQL Exception : "+e.getMessage());
+			}
+			
+		}
+	
+	return Response.status(200).entity(main.toString()).build();
+	  	  
 
+  }
+  
+  
+ // INserting into Branch
+  
+  
+  PreparedStatement prparedStatement = null;
+    @POST
+	@Path("/newBranch")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response createBranch(Branch branch)
+	{
+		MysqlConnection connection = new MysqlConnection();		
+		connect = connection.getConnection();
+		
+	try
+	{	
+		String query = "INSERT INTO `midterm`.`branch`(`BRANCH_ID`,`ADDRESS`,`CITY`,`NAME`,`STATE`,`ZIP_CODE`)"
+				+ "VALUES(?,?,?,?,?,?)";
+		
+		prparedStatement = connect.prepareStatement(query);		
+		prparedStatement.setInt(1, branch.getBRANCH_ID());
+		prparedStatement.setString(2, branch.getADDRESS());
+		prparedStatement.setString(3,branch.getCITY());
+		prparedStatement.setString(4,branch.getNAME());
+		prparedStatement.setString(5,branch.getSTATE());
+		prparedStatement.setString(6, branch.getZIP_CODE());		
+					
+		int rowCount = prparedStatement.executeUpdate();
+		
+		if(rowCount>0)
+		{
+			System.out.println("Record inserted Successfully! : "+rowCount);
+			
+			main.accumulate("Status", 201);
+			main.accumulate("Message", "Record Successfully added!");
+		}
+		
+		
+	}
+	     catch (SQLException e) {
+
+		main.accumulate("Status", 500);
+		main.accumulate("Message", e.getMessage());
+	}
+	     finally {
+		  try
+		  {
+			 connect.close();
+		    	preparedStatement.close();
+		  }
+		       catch (SQLException e) {
+		    	System.out.println("Finally SQL Exception : "+e.getMessage());
+		  }
+	}		
+	return Response.status(201).entity(main.toString()).build();
+					
+	
+}
+     // Deleting record from the Customer table    
+
+@DELETE
+@Path("/deleteCusto/{id}")
+@Produces(MediaType.APPLICATION_JSON)
+public Response selectCustomer(@PathParam("id") String id)
+{
+	MysqlConnection connection= new MysqlConnection();
+	conn= connection.getConnection();
+	Status status= Status.OK;
+	try
+	{
+		String query="DELETE FROM `customer` WHERE `CUST_ID` = "+id;
+		stmt= conn.createStatement();		
+		stmt.executeUpdate(query);
+		
+		int rowCount = stmt.executeUpdate(query);
+		if (rowCount > 0) 
+		{
+		status=Status.OK;
+		main.accumulate("status", status);
+		main.accumulate("Message","Data successfully updated !");
+		System.out.println("Data successfully deleted");
+		
+		}
+		
+		
+	}catch(SQLException e)
+	{
+		e.printStackTrace();
+		status=Status.NOT_MODIFIED;
+		main.accumulate("status",status);
+		main.accumulate("Message","Something Went Wrong");
+	}
+	
+	
+	return Response.status(status).entity(main.toString()).build();
+}
 }
