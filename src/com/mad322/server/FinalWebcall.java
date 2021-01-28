@@ -531,6 +531,108 @@ public class FinalWebcall
 		return Response.status(200).entity(main.toString()).build();
 
 	}
+
+PreparedStatement prepareStatement = null;
+  @PUT
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Path("/editCusto/{id}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response updateCustomer(@PathParam("id")int id,Customer custo)
+  {
+  	MysqlConnection connection= new MysqlConnection();
+  	connect= connection.getConnection();
+  	Status status =Status.OK;
+  	try 
+  	{
+  		String query ="UPDATE `customer` SET `CUST_ID` =?,`ADDRESS` =?,`CITY` =?,`CUST_TYPE_CD` =?, `FED_ID` =?,`POSTAL_CODE` =?,`STATE` =? WHERE `CUST_ID` ="+id;
+  		
+  		prepareStatement = connect.prepareStatement(query);   		 		   		
+  		prepareStatement.setInt(1, custo.getCUST_ID());
+  		prepareStatement.setString(2, custo.getADDRESS());
+  		prepareStatement.setString(3,custo.getCITY());
+  		prepareStatement.setString(4,custo.getCUST_TYPE_CD());
+  		prepareStatement.setString(5,custo.getFED_ID());
+  		prepareStatement.setString(6, custo.getPOSTAL_CODE());
+  		prepareStatement.setString(7, custo.getSTATE());  
+  		
+  		
+  		int rowCount = prepareStatement.executeUpdate(); 		
+  		if (rowCount > 0) 
+  		{
+  		status=Status.OK;
+  		main.accumulate("status", status);
+  		main.accumulate("Message","Data successfully updated !");		
+  		}
+  		else
+  		{
+  			status=Status.NOT_MODIFIED;
+  			main.accumulate("status", status);
+  			main.accumulate("Message","Something Went Wrong");						
+  		}  
+  		
+  	}
+  	catch(SQLException e)
+  	{
+  		e.printStackTrace();
+  		status=Status.NOT_MODIFIED;
+  		main.accumulate("status", status);
+  		main.accumulate("Message","Something Went Wrong");
+  	}  	
+  	return Response.status(status).entity(main.toString()).build();
+  }	
+ 
+//Displaying from employees whose department id is given from parameters
+  @GET
+  @Path("/teja/{id}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response teja(@PathParam("id")int id)
+  {
+	  
+	  
+	  MysqlConnection connection = new MysqlConnection();
+	   connect = connection.getConnection();
+	   
+	   try 
+	   {
+		stmt = connect.createStatement();
+		res = stmt.executeQuery("select * from employee where DEPT_ID = "+id+";");
+		
+		while(res.next())
+		{
+		  child = new JSONObject();
+		  
+		  
+		  child.accumulate("Employee Name", res.getString("FIRST_NAME"));	
+		  child.accumulate("Department ID", res.getString("DEPT_ID"));
+		
+		 		  
+		  jsArray.put(child);
+		}
+		
+		main.put("employee", jsArray);
+		
+	   }catch(SQLException e)
+		{
+			System.out.println("SQL Exception : +e.getMessage");
+		}
+		finally
+		{
+			try
+			{
+				connect.close();
+				stmt.close();
+				res.close();
+			}
+			catch (SQLException e)
+			{
+				System.out.println("Finally Block SQL Exception : "+e.getMessage());
+			}
+			
+		}
 	
+	return Response.status(200).entity(main.toString()).build();
+	  	  
+
+  }	
 	
 }
